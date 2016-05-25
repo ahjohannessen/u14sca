@@ -19,3 +19,7 @@ for file in /u14sca/version/*;
 do
   $file
 done
+
+# Install or update Oracle Java8
+echo "================= Install Oracle Java8 ==================="
+sudo apt-get update && sudo apt-get install oracle-java8-installer -y
