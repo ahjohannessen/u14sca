@@ -1,10 +1,41 @@
-#!/bin/bash
+#!/bin/bash -e
 
 sudo apt-get clean
 sudo mv /var/lib/apt/lists /tmp
 sudo mkdir -p /var/lib/apt/lists/partial
 sudo apt-get clean
 sudo apt-get update
+
+echo "================ Installing oracle-java8-installer ================="
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+add-apt-repository -y ppa:webupd8team/java
+apt-get update
+apt-get install -y oracle-java8-installer
+update-alternatives --set java /usr/lib/jvm/java-8-oracle/jre/bin/java
+update-alternatives --set javac /usr/lib/jvm/java-8-oracle/bin/javac
+update-alternatives --set javaws /usr/lib/jvm/java-8-oracle/jre/bin/javaws
+echo 'export JAVA_HOME=/usr/lib/jvm/java-8-oracle' >> $HOME/.bashrc
+echo 'export PATH=$PATH:/usr/lib/jvm/java-8-oracle/jre/bin' >> $HOME/.bashrc
+
+
+echo "================ Installing Letsencrypt certs ================="
+KEYSTORE=/usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts
+
+wget https://letsencrypt.org/certs/letsencryptauthorityx1.der
+wget https://letsencrypt.org/certs/letsencryptauthorityx2.der
+wget https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.der
+wget https://letsencrypt.org/certs/lets-encrypt-x2-cross-signed.der
+wget https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.der
+wget https://letsencrypt.org/certs/lets-encrypt-x4-cross-signed.der
+
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias isrgrootx1 -file letsencryptauthorityx1.der
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias isrgrootx2 -file letsencryptauthorityx2.der
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias letsencryptauthorityx1 -file lets-encrypt-x1-cross-signed.der
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias letsencryptauthorityx2 -file lets-encrypt-x2-cross-signed.der
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias letsencryptauthorityx3 -file lets-encrypt-x3-cross-signed.der
+keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importcert -alias letsencryptauthorityx4 -file lets-encrypt-x4-cross-signed.der
+
+rm -f letsencryptauthorityx1.der letsencryptauthorityx2.der lets-encrypt-x1-cross-signed.der lets-encrypt-x2-cross-signed.der lets-encrypt-x3-cross-signed.der lets-encrypt-x4-cross-signed.der
 
 # Install sbt
 echo "================= Install sbt ==================="
@@ -19,7 +50,3 @@ for file in /u14sca/version/*;
 do
   $file
 done
-
-# Install or update Oracle Java8
-echo "================= Install Oracle Java8 ==================="
-sudo apt-get update && sudo apt-get install oracle-java8-installer -y

@@ -1,8 +1,5 @@
-FROM drydock/u14jav:prod
+FROM drydock/u14:prod
 
 ADD . /u14sca
 
 RUN /u14sca/install.sh
-
-# Temporary workaround to ensure letsencrypt certs are installed
-RUN sudo /u14sca/install-letsencrypt-in-jdk.sh
