@@ -38,8 +38,8 @@ keytool -trustcacerts -keystore $KEYSTORE -storepass changeit -noprompt -importc
 rm -f letsencryptauthorityx1.der letsencryptauthorityx2.der lets-encrypt-x1-cross-signed.der lets-encrypt-x2-cross-signed.der lets-encrypt-x3-cross-signed.der lets-encrypt-x4-cross-signed.der
 
 # Install sbt
-echo "================= Install sbt ==================="
-sudo wget https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.11/sbt-launch.jar
+echo "================= Installing sbt ==================="
+sudo wget https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.13/sbt-launch.jar
 sudo mv sbt-launch.jar /usr/local/bin/sbt-launch.jar
 sudo echo 'SBT_OPTS="-Xms512M -Xmx1536M -Xss6M -XX:+CMSClassUnloadingEnabled"' > /usr/local/bin/sbt
 sudo echo 'java $SBT_OPTS -jar `dirname $0`/sbt-launch.jar "$@"' >> /usr/local/bin/sbt
@@ -48,5 +48,16 @@ printf 'exit\n' | sbt
 
 for file in /u14sca/version/*;
 do
-  $file
+  ${file}
 done
+
+# NodeJS, NPM & JSDOM
+NODEJS_VERSION="6.9.1"
+NPM_VERSION="4.0.3"
+JSDOM_VERSION="9.8.3"
+echo "================= Installing nodejs $NODEJS_VERSION, npm $NPM_VERSION & jsdom $JSDOM_VERSION ==================="
+apt-get purge nodejs && apt-get autoremove && apt-get autoclean
+wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
+export NVM_DIR="/$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm install ${NODEJS_VERSION} && nvm use ${NODEJS_VERSION} && nvm alias default ${NODEJS_VERSION} && npm install -g --save npm@${NPM_VERSION} && npm install -g --save jsdom@${JSDOM_VERSION}
