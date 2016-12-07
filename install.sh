@@ -51,13 +51,8 @@ do
   ${file}
 done
 
-# NodeJS, NPM & JSDOM
-NODEJS_VERSION="6.9.1"
-NPM_VERSION="4.0.3"
-JSDOM_VERSION="9.8.3"
-echo "================= Installing nodejs $NODEJS_VERSION, npm $NPM_VERSION & jsdom $JSDOM_VERSION ==================="
+echo "================= Installing nodejs & jsdom ==================="
 apt-get purge nodejs && apt-get autoremove && apt-get autoclean
-wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
-export NVM_DIR="/$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-nvm install ${NODEJS_VERSION} && nvm use ${NODEJS_VERSION} && nvm alias default ${NODEJS_VERSION} && npm install -g --save npm@${NPM_VERSION} && npm install -g --save jsdom@${JSDOM_VERSION}
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs
+npm install jsdom
